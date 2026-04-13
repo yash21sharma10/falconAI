@@ -7,14 +7,14 @@ import { UpdateCampaignDto } from './dto/update-campaign.dto';
 export class CampaignService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createCampaignDto: CreateCampaignDto) {
-    return this.prisma.campaign.create({
+  async create(createCampaignDto: CreateCampaignDto) {
+    return await this.prisma.campaign.create({
       data: createCampaignDto,
     });
   }
 
-  findAll() {
-    return this.prisma.campaign.findMany({
+  async findAll() {
+    return await this.prisma.campaign.findMany({
       orderBy: {
         createdAt: 'desc',
       },
@@ -36,7 +36,7 @@ export class CampaignService {
   async update(id: number, updateCampaignDto: UpdateCampaignDto) {
     await this.findOne(id);
 
-    return this.prisma.campaign.update({
+    return await this.prisma.campaign.update({
       where: { id },
       data: updateCampaignDto,
     });
@@ -45,7 +45,7 @@ export class CampaignService {
   async remove(id: number) {
     await this.findOne(id);
 
-    return this.prisma.campaign.delete({
+    return await this.prisma.campaign.delete({
       where: { id },
     });
   }
