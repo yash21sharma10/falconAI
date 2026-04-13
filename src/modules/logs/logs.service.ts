@@ -16,8 +16,8 @@ export class LogsService {
     return { module: 'logs', status: 'ok' };
   }
 
-  createEmailLog(input: CreateEmailLogInput) {
-    return this.prisma.emailLog.create({
+  async createEmailLog(input: CreateEmailLogInput) {
+    return await this.prisma.emailLog.create({
       data: {
         campaignId: input.campaignId,
         leadId: input.leadId,
