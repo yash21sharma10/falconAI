@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Campaign {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  status      String    @default("draft")
+  leads       Lead[]
+  emails      Email[]
+  logs        Log[]
+  emailLogs   EmailLog[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Lead {
+  id          Int       @id @default(autoincrement())
+  email       String
+  firstName   String?
+  lastName    String?
+  campaignId  Int?
+  campaign    Campaign? @relation(fields: [campaignId], references: [id])
+  logs        Log[]
+  emailLogs   EmailLog[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([email, campaignId])
+}
+
+model Email {
+  id          Int       @id @default(autoincrement())
+  campaignId  Int
+  campaign    Campaign  @relation(fields: [campaignId], references: [id])
+  subject     String
+  body        String
+  status      String    @default("queued")
+  sentAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model QueueJob {
+  id          Int       @id @default(autoincrement())
+  type        String
+  payload     Json
+  status      String    @default("pending")
+  runAt       DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Log {
+  id          Int       @id @default(autoincrement())
+  level       String
+  message     String
+  meta        Json?
+  campaignId  Int?
+  campaign    Campaign? @relation(fields: [campaignId], references: [id])
+  leadId      Int?
+  lead        Lead?     @relation(fields: [leadId], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
+model EmailLog {
+  id           Int      @id @default(autoincrement())
+  campaignId   Int
+  campaign     Campaign @relation(fields: [campaignId], references: [id])
+  leadId       Int
+  lead         Lead     @relation(fields: [leadId], references: [id])
+  status       String
+  errorMessage String?
+  createdAt    DateTime @default(now())
+}
